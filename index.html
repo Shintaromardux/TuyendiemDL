@@ -1,0 +1,522 @@
+<!DOCTYPE html> 
+<html lang="vi"> 
+<head> 
+  <meta charset="UTF-8" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+  <title>Trắc nghiệm Tuyến điểm du lịch Việt Nam</title> 
+  <style> 
+    :root { 
+      --primary: #0f766e; 
+      --primary-dark: #115e59; 
+      --secondary: #0284c7; 
+      --bg: #f4f8fb; 
+      --card: #ffffff; 
+      --text: #1f2937; 
+      --muted: #6b7280; 
+      --border: #dbe4ea; 
+      --correct: #16a34a; 
+      --wrong: #dc2626; 
+      --warning: #f59e0b; 
+    } 
+    * { box-sizing: border-box; } 
+    body { 
+      margin: 0; 
+      font-family: Arial, Helvetica, sans-serif; 
+      background: linear-gradient(135deg, #eefaf7, #f8fbff); 
+      color: var(--text); 
+      line-height: 1.6; 
+    } 
+    .hero { 
+      background: linear-gradient(135deg, #0f766e, #0ea5e9); 
+      color: #fff; 
+      padding: 36px 18px; 
+      text-align: center; 
+    } 
+    .hero h1 { 
+      margin: 0 0 10px; 
+      font-size: clamp(24px, 4vw, 40px); 
+      line-height: 1.25; 
+    } 
+    .hero p { 
+      max-width: 880px; 
+      margin: 0 auto; 
+      opacity: 0.95; 
+      font-size: 16px; 
+    } 
+    .container { 
+      width: min(100%, 980px); 
+      margin: 0 auto; 
+      padding: 22px 16px 48px; 
+    } 
+    .info-panel { 
+      background: #ffffff; 
+      border: 1px solid var(--border); 
+      border-radius: 18px; 
+      padding: 18px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 8px 22px rgba(15, 118, 110, 0.08); 
+    } 
+    .info-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 12px; 
+    } 
+    .info-item { 
+      background: #f8fafc; 
+      border-radius: 14px; 
+      padding: 12px; 
+      border: 1px solid #e5e7eb; 
+      text-align: center; 
+    } 
+    .info-item strong { 
+      display: block; 
+      font-size: 20px; 
+      color: var(--primary); 
+    } 
+    .info-item span { 
+      color: var(--muted); 
+      font-size: 14px; 
+    } 
+    .question-card { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 18px; 
+      padding: 20px; 
+      margin: 16px 0; 
+      box-shadow: 0 8px 22px rgba(31, 41, 55, 0.06); 
+      transition: transform 0.2s ease, box-shadow 0.2s ease; 
+    } 
+    .question-card:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 12px 28px rgba(31, 41, 55, 0.09); 
+    } 
+    .question-header { 
+      display: flex; 
+      justify-content: space-between; 
+      gap: 12px; 
+      align-items: flex-start; 
+      margin-bottom: 12px; 
+    } 
+    .question-title { 
+      font-weight: 700; 
+      font-size: 17px; 
+    } 
+    .badge { 
+      flex-shrink: 0; 
+      display: inline-block; 
+      padding: 4px 10px; 
+      border-radius: 999px; 
+      background: #ecfeff; 
+      color: #0369a1; 
+      font-size: 12px; 
+      font-weight: 700; 
+      border: 1px solid #bae6fd; 
+    } 
+    .option { 
+      display: block; 
+      margin: 10px 0; 
+      padding: 12px 14px; 
+      border: 1px solid #e5e7eb; 
+      border-radius: 14px; 
+      cursor: pointer; 
+      background: #ffffff; 
+      transition: all 0.2s ease; 
+    } 
+    .option:hover { 
+      background: #f0fdfa; 
+      border-color: #99f6e4; 
+    } 
+    .option input { 
+      margin-right: 8px; 
+      transform: scale(1.1); 
+    } 
+    .question-card.unanswered { 
+      border-color: var(--warning); 
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); 
+    } 
+    .option.correct { 
+      background: #ecfdf5; 
+      border-color: var(--correct); 
+      color: #14532d; 
+      font-weight: 700; 
+    } 
+    .option.wrong { 
+      background: #fef2f2; 
+      border-color: var(--wrong); 
+      color: #7f1d1d; 
+      font-weight: 700; 
+    } 
+    .explanation { 
+      display: none; 
+      margin-top: 12px; 
+      padding: 12px; 
+      background: #f8fafc; 
+      border-left: 4px solid var(--primary); 
+      border-radius: 10px; 
+      color: #374151; 
+    } 
+    .actions { 
+      position: sticky; 
+      bottom: 0; 
+      background: rgba(244, 248, 251, 0.94); 
+      backdrop-filter: blur(8px); 
+      border-top: 1px solid var(--border); 
+      padding: 14px 0; 
+      margin-top: 24px; 
+      z-index: 10; 
+    } 
+    .actions-inner { 
+      width: min(100%, 980px); 
+      margin: 0 auto; 
+      padding: 0 16px; 
+      display: flex; 
+      gap: 12px; 
+      flex-wrap: wrap; 
+      align-items: center; 
+      justify-content: space-between; 
+    } 
+    button { 
+      border: none; 
+      cursor: pointer; 
+      border-radius: 14px; 
+      padding: 12px 18px; 
+      font-size: 15px; 
+      font-weight: 700; 
+      transition: transform 0.15s ease, background 0.2s ease; 
+    } 
+    button:hover { 
+      transform: translateY(-1px); 
+    } 
+    .btn-primary { 
+      background: var(--primary); 
+      color: #fff; 
+    } 
+    .btn-primary:hover { 
+      background: var(--primary-dark); 
+    } 
+    .btn-secondary { 
+      background: #e5e7eb; 
+      color: #111827; 
+    } 
+    .btn-blue { 
+      background: var(--secondary); 
+      color: #fff; 
+    } 
+    .result-box { 
+      display: none; 
+      background: #ffffff; 
+      border: 1px solid var(--border); 
+      border-radius: 18px; 
+      padding: 18px; 
+      margin-top: 20px; 
+      box-shadow: 0 8px 22px rgba(31, 41, 55, 0.08); 
+    } 
+    .result-score { 
+      font-size: 28px; 
+      font-weight: 800; 
+      color: var(--primary); 
+      margin: 6px 0; 
+    } 
+    .progress { 
+      color: var(--muted); 
+      font-size: 14px; 
+    } 
+    footer { 
+      text-align: center; 
+      color: var(--muted); 
+      padding: 20px; 
+      font-size: 14px; 
+    } 
+    @media (max-width: 760px) { 
+      .info-grid { grid-template-columns: 1fr 1fr; } 
+      .question-header { flex-direction: column; } 
+      .actions-inner { flex-direction: column; align-items: stretch; } 
+      button { width: 100%; margin-top: 6px; } 
+    } 
+    @media (max-width: 440px) { 
+      .info-grid { grid-template-columns: 1fr; } 
+    } 
+  </style> 
+</head> 
+<body> 
+  <header class="hero"> 
+    <h1>Trắc nghiệm: Tuyến điểm du lịch Việt Nam</h1> 
+    <p> Mỗi lượt làm bài gồm 20 câu hỏi được chọn ngẫu nhiên từ ngân hàng câu hỏi lớn. Thứ tự câu hỏi và đáp án sẽ được xáo trộn sau mỗi lần làm. </p> 
+  </header> 
+  <main class="container"> 
+    <section class="info-panel"> 
+      <div class="info-grid"> 
+        <div class="info-item"> <strong id="bankCount">0</strong> <span>Câu trong ngân hàng</span> </div> 
+        <div class="info-item"> <strong>20</strong> <span>Câu mỗi lượt làm</span> </div> 
+        <div class="info-item"> <strong>Random</strong> <span>Xáo trộn câu và đáp án</span> </div> 
+        <div class="info-item"> <strong>Tự chấm</strong> <span>Hiển thị điểm cuối bài</span> </div> 
+      </div> 
+    </section> 
+    <div id="quiz"></div> 
+    <section id="result" class="result-box"> 
+      <h2>Kết quả bài làm</h2> 
+      <div id="scoreText" class="result-score"></div> 
+      <p id="commentText"></p> 
+    </section> 
+  </main> 
+  <section class="actions"> 
+    <div class="actions-inner"> 
+      <div id="progressText" class="progress">Bạn chưa trả lời câu nào.</div> 
+      <div> 
+        <button class="btn-blue" onclick="startNewQuiz()">Làm bộ câu hỏi mới</button> 
+        <button class="btn-secondary" onclick="resetCurrentQuiz()">Làm lại bộ hiện tại</button> 
+        <button class="btn-primary" onclick="submitQuiz()">Nộp bài</button> 
+      </div> 
+    </div> 
+  </section> 
+  <footer> Học phần: Tuyến, điểm du lịch Việt Nam </footer> 
+  <script> 
+    const QUESTION_COUNT_PER_ATTEMPT = 20; 
+    const questionBank = [ 
+      { text: "Theo đề cương, tuyến du lịch được hiểu đúng nhất là gì?", level: "Nhận biết", explanation: "Tuyến du lịch là lộ trình liên kết các khu du lịch, điểm du lịch, cơ sở dịch vụ du lịch và gắn với các tuyến giao thông.", options: [ { text: "Lộ trình liên kết các khu du lịch, điểm du lịch, cơ sở dịch vụ du lịch gắn với các tuyến giao thông.", correct: true }, { text: "Một địa điểm có tài nguyên du lịch hấp dẫn được đầu tư để khách tham quan.", correct: false }, { text: "Một đô thị có trên 60% dân số làm nông nghiệp.", correct: false }, { text: "Một khu vực chỉ phục vụ hoạt động nghỉ dưỡng biển.", correct: false } ] }, 
+      { text: "Điểm du lịch là cấp nào trong hệ thống phân vị vùng du lịch?", level: "Nhận biết", explanation: "Điểm du lịch là cấp thấp nhất trong hệ thống phân vị vùng du lịch, nhưng là cơ sở quan trọng để hình thành tuyến du lịch.", options: [ { text: "Cấp cao nhất.", correct: false }, { text: "Cấp thấp nhất.", correct: true }, { text: "Cấp liên quốc gia.", correct: false }, { text: "Cấp chỉ dành cho vùng biển đảo.", correct: false } ] }, 
+      { text: "Khu du lịch được hiểu là nơi như thế nào?", level: "Nhận biết", explanation: "Khu du lịch là nơi có tài nguyên du lịch hấp dẫn, được quy hoạch và đầu tư phát triển để đáp ứng nhu cầu đa dạng của khách du lịch.", options: [ { text: "Nơi có tài nguyên du lịch hấp dẫn, được quy hoạch và đầu tư phát triển nhằm đáp ứng nhu cầu đa dạng của khách du lịch.", correct: true }, { text: "Nơi chỉ có một điểm tham quan đơn lẻ.", correct: false }, { text: "Nơi không cần cơ sở vật chất kỹ thuật du lịch.", correct: false }, { text: "Nơi chỉ phục vụ hoạt động hành chính.", correct: false } ] }, 
+      { text: "Điều kiện hình thành cực tăng trưởng du lịch gồm những yếu tố nào?", level: "Nhận biết", explanation: "Cực tăng trưởng du lịch cần tài nguyên du lịch phong phú, cơ sở vật chất kỹ thuật và nguồn nhân lực.", options: [ { text: "Tài nguyên du lịch phong phú, cơ sở vật chất kỹ thuật và nguồn nhân lực.", correct: true }, { text: "Chỉ cần có nhiều khách quốc tế.", correct: false }, { text: "Chỉ cần có đường hàng không.", correct: false }, { text: "Chỉ cần có nhà hàng và khách sạn cao cấp.", correct: false } ] }, 
+      { text: "Vai trò của cực tăng trưởng du lịch là gì?", level: "Thông hiểu", explanation: "Cực tăng trưởng du lịch có vai trò tạo động lực phát triển kinh tế, văn hóa xã hội và là cửa ngõ thu hút khách.", options: [ { text: "Chỉ để quảng bá hình ảnh địa phương.", correct: false }, { text: "Là động lực phát triển kinh tế, phát triển văn hóa xã hội và cửa ngõ thu hút khách.", correct: true }, { text: "Chỉ phục vụ nghiên cứu học thuật.", correct: false }, { text: "Thay thế hoàn toàn các vùng du lịch khác.", correct: false } ] }, 
+      { text: "Đô thị du lịch là đô thị có đặc điểm nào sau đây?", level: "Nhận biết", explanation: "Đô thị du lịch là đô thị có lợi thế phát triển du lịch và du lịch có vai trò quan trọng trong hoạt động của đô thị.", options: [ { text: "Du lịch có vai trò quan trọng trong hoạt động của đô thị.", correct: true }, { text: "Chỉ cần có một khách sạn lớn.", correct: false }, { text: "Không cần tài nguyên du lịch.", correct: false }, { text: "Chỉ phục vụ khách nội địa.", correct: false } ] }, 
+      { text: "Theo đề cương, vùng du lịch là phân vị lãnh thổ du lịch cấp nào?", level: "Nhận biết", explanation: "Vùng du lịch là phân vị lãnh thổ du lịch cấp quốc gia và là cấp cao nhất trong hệ thống phân vị lãnh thổ du lịch.", options: [ { text: "Cấp thấp nhất.", correct: false }, { text: "Cấp trung gian.", correct: false }, { text: "Cấp quốc gia và là cấp cao nhất trong hệ thống phân vị lãnh thổ du lịch.", correct: true }, { text: "Cấp chỉ áp dụng cho tuyến nội tỉnh.", correct: false } ] }, 
+      { text: "Chương trình du lịch là gì?", level: "Nhận biết", explanation: "Chương trình du lịch là văn bản thể hiện lịch trình, dịch vụ và giá bán được định trước cho chuyến đi.", options: [ { text: "Văn bản thể hiện lịch trình, dịch vụ và giá bán được định trước cho chuyến đi.", correct: true }, { text: "Danh sách các khách sạn trong một tỉnh.", correct: false }, { text: "Bản đồ giao thông quốc gia.", correct: false }, { text: "Một loại hình tài nguyên du lịch tự nhiên.", correct: false } ] }, 
+      { text: "Sản phẩm du lịch được hiểu là gì?", level: "Nhận biết", explanation: "Sản phẩm du lịch là tập hợp các dịch vụ thỏa mãn nhu cầu du khách trong chuyến du lịch.", options: [ { text: "Một tập hợp các dịch vụ thỏa mãn nhu cầu du khách trong chuyến du lịch.", correct: true }, { text: "Chỉ là vé tham quan.", correct: false }, { text: "Chỉ là phòng lưu trú.", correct: false }, { text: "Chỉ là phương tiện vận chuyển.", correct: false } ] }, 
+      { text: "Đặc điểm nào cho thấy tuyến, điểm du lịch là sản phẩm đặc biệt và vô hình?", level: "Thông hiểu", explanation: "Tuyến, điểm du lịch là sản phẩm vô hình; khách không thể nhìn thấy hoặc sờ thấy đầy đủ trước khi sử dụng.", options: [ { text: "Khách không thể nhìn thấy, sờ thấy đầy đủ trước khi sử dụng.", correct: true }, { text: "Luôn được sản xuất hàng loạt trong nhà máy.", correct: false }, { text: "Có thể lưu kho như hàng hóa vật chất.", correct: false }, { text: "Không phụ thuộc vào chất lượng phục vụ.", correct: false } ] }, 
+      { text: "Chất lượng của tuyến, điểm du lịch phụ thuộc vào yếu tố nào?", level: "Thông hiểu", explanation: "Chất lượng tuyến, điểm du lịch phụ thuộc vào tài nguyên, dịch vụ, vận chuyển, thái độ và trình độ của nhân viên phục vụ.", options: [ { text: "Chỉ phụ thuộc vào thời tiết.", correct: false }, { text: "Tài nguyên du lịch, dịch vụ trên tuyến, vận chuyển, thái độ và trình độ nhân viên.", correct: true }, { text: "Chỉ phụ thuộc vào số lượng ảnh quảng cáo.", correct: false }, { text: "Chỉ phụ thuộc vào giá bán.", correct: false } ] }, 
+      { text: "Tuyến, điểm du lịch dễ bị hỏng nghĩa là gì?", level: "Thông hiểu", explanation: "Sản phẩm tuyến, điểm du lịch không thể lưu kho; nếu không được sử dụng ở thời điểm xác định thì cơ hội phục vụ có thể mất đi.", options: [ { text: "Nếu không được sử dụng tại một thời điểm xác định thì cơ hội bán sản phẩm có thể mất đi.", correct: true }, { text: "Các công trình luôn bị hư hại vật chất.", correct: false }, { text: "Không thể thay đổi lịch trình.", correct: false }, { text: "Không thể tổ chức cho khách đoàn.", correct: false } ] }, 
+      { text: "Theo hệ thống giao thông, tuyến du lịch được phân loại thành nhóm nào?", level: "Nhận biết", explanation: "Theo hệ thống giao thông, tuyến du lịch gồm đường bộ, đường sắt, đường thủy và đường hàng không.", options: [ { text: "Đường bộ, đường sắt, đường thủy, đường hàng không.", correct: true }, { text: "Nội tỉnh, nội vùng, liên vùng, liên quốc gia.", correct: false }, { text: "Sinh thái, tâm linh, lễ hội, làng nghề.", correct: false }, { text: "Quốc gia, địa phương, chuyên đề.", correct: false } ] }, 
+      { text: "Theo tổ chức không gian và liên kết vùng, tuyến du lịch gồm nhóm nào?", level: "Nhận biết", explanation: "Theo tổ chức không gian và liên kết vùng, tuyến du lịch gồm nội tỉnh, nội vùng, liên vùng và liên quốc gia.", options: [ { text: "Đường bộ, đường sắt, đường thủy, đường hàng không.", correct: false }, { text: "Nội tỉnh, nội vùng, liên vùng, liên quốc gia.", correct: true }, { text: "Khách sạn, nhà hàng, hướng dẫn viên, vận chuyển.", correct: false }, { text: "Di sản, sinh thái, nghỉ dưỡng, hội nghị.", correct: false } ] }, 
+      { text: "Tuyến du lịch quốc gia có đặc điểm nào sau đây?", level: "Thông hiểu", explanation: "Tuyến du lịch quốc gia kết nối các khu, điểm du lịch, có tính liên vùng, liên tỉnh và có thể kết nối các cửa khẩu.", options: [ { text: "Kết nối các khu, điểm du lịch, có tính liên vùng, liên tỉnh và có thể kết nối cửa khẩu.", correct: true }, { text: "Chỉ nằm trong phạm vi một xã.", correct: false }, { text: "Không cần bảo vệ cảnh quan môi trường.", correct: false }, { text: "Chỉ do doanh nghiệp tự công nhận.", correct: false } ] }, 
+      { text: "Tuyến du lịch địa phương do cơ quan nào công nhận?", level: "Nhận biết", explanation: "Tuyến du lịch địa phương do Ủy ban nhân dân cấp tỉnh công nhận.", options: [ { text: "Ủy ban nhân dân cấp tỉnh.", correct: true }, { text: "Một công ty lữ hành.", correct: false }, { text: "Một khách sạn địa phương.", correct: false }, { text: "Hướng dẫn viên du lịch.", correct: false } ] }, 
+      { text: "Tuyến du lịch chuyên đề là gì?", level: "Thông hiểu", explanation: "Tuyến du lịch chuyên đề là lộ trình du lịch theo chủ đề chuyên biệt hoặc theo sản phẩm đặc trưng của vùng, địa phương.", options: [ { text: "Lộ trình du lịch theo một chủ đề chuyên biệt hoặc sản phẩm đặc trưng của vùng, địa phương.", correct: true }, { text: "Tuyến chỉ đi bằng máy bay.", correct: false }, { text: "Tuyến chỉ dành cho khách nước ngoài.", correct: false }, { text: "Tuyến chỉ nối hai khách sạn.", correct: false } ] }, 
+      { text: "Ví dụ nào sau đây là tuyến du lịch quốc gia trong đề cương?", level: "Nhận biết", explanation: "Tuyến du lịch xuyên Việt theo quốc lộ 1A là một ví dụ về tuyến du lịch quốc gia.", options: [ { text: "Tuyến du lịch xuyên Việt theo quốc lộ 1A.", correct: true }, { text: "Tuyến Đường Lâm - Bát Tràng.", correct: false }, { text: "Tuyến Hồ Lắk - Buôn Đôn.", correct: false }, { text: "Tuyến Chợ Cái Răng - Bến Ninh Kiều.", correct: false } ] }, 
+      { text: "Tuyến Hòa Bình - Sơn La - Điện Biên - Lai Châu đi chủ yếu theo hướng nào?", level: "Nhận biết", explanation: "Đề cương nêu tuyến Hòa Bình - Sơn La - Điện Biên - Lai Châu đi theo hướng QL6 sang QL4D.", options: [ { text: "QL6 sang QL4D.", correct: true }, { text: "Quốc lộ 1A.", correct: false }, { text: "Cao tốc Pháp Vân - Cầu Giẽ.", correct: false }, { text: "Tuyến sông Hậu.", correct: false } ] }, 
+      { text: "Tuyến chuyên đề lễ hội, tâm linh trong đề cương gồm nhóm điểm nào?", level: "Nhận biết", explanation: "Tuyến chuyên đề lễ hội, tâm linh gồm Chùa Hương - Tam Chúc - Bái Đính - Đền Trần - Phủ Giầy - Yên Tử.", options: [ { text: "Chùa Hương - Tam Chúc - Bái Đính - Đền Trần - Phủ Giầy - Yên Tử.", correct: true }, { text: "Hồ Lắk - Buôn Đôn - Thác DrayNur.", correct: false }, { text: "Hội An - Mỹ Sơn - Đà Nẵng.", correct: false }, { text: "Cần Thơ - Rạch Giá - Hà Tiên.", correct: false } ] }, 
+      { text: "Điểm du lịch quốc gia cần có khả năng phục vụ tối thiểu bao nhiêu lượt khách mỗi năm?", level: "Nhận biết", explanation: "Điểm du lịch quốc gia cần có khả năng đảm bảo phục vụ 100.000 lượt khách/năm.", options: [ { text: "10.000 lượt khách/năm.", correct: false }, { text: "100.000 lượt khách/năm.", correct: true }, { text: "500.000 lượt khách/năm.", correct: false }, { text: "1.000.000 lượt khách/năm.", correct: false } ] }, 
+      { text: "Điểm nào sau đây là ví dụ về điểm du lịch quốc gia trong đề cương?", level: "Nhận biết", explanation: "Cúc Phương là một ví dụ về điểm du lịch quốc gia được nêu trong đề cương.", options: [ { text: "Cúc Phương.", correct: true }, { text: "Cù Lao An Bình.", correct: false }, { text: "Cồn Phụng.", correct: false }, { text: "Nhà thờ Con Gà.", correct: false } ] }, 
+      { text: "Điểm du lịch địa phương cần có khả năng phục vụ tối thiểu bao nhiêu lượt khách mỗi năm?", level: "Nhận biết", explanation: "Điểm du lịch địa phương cần có khả năng đảm bảo phục vụ 10.000 lượt khách/năm.", options: [ { text: "5.000 lượt khách/năm.", correct: false }, { text: "10.000 lượt khách/năm.", correct: true }, { text: "100.000 lượt khách/năm.", correct: false }, { text: "1.000.000 lượt khách/năm.", correct: false } ] }, 
+      { text: "Ví dụ nào sau đây thuộc nhóm điểm du lịch địa phương ở Phú Thọ trong đề cương?", level: "Nhận biết", explanation: "Đền Mẫu Âu Cơ là ví dụ về điểm du lịch địa phương ở Phú Thọ.", options: [ { text: "Đền Mẫu Âu Cơ.", correct: true }, { text: "Đại Nội Huế.", correct: false }, { text: "Vịnh Hạ Long.", correct: false }, { text: "Chợ Cái Răng.", correct: false } ] }, 
+      { text: "Khu du lịch quốc gia cần có diện tích tối thiểu là bao nhiêu?", level: "Nhận biết", explanation: "Khu du lịch quốc gia cần có diện tích tối thiểu 1.000 ha, trừ trường hợp đặc biệt.", options: [ { text: "100 ha.", correct: false }, { text: "200 ha.", correct: false }, { text: "500 ha.", correct: false }, { text: "1.000 ha.", correct: true } ] }, 
+      { text: "Khu du lịch quốc gia cần có khả năng phục vụ tối thiểu bao nhiêu lượt khách/năm?", level: "Nhận biết", explanation: "Khu du lịch quốc gia cần có khả năng phục vụ ít nhất 1.000.000 lượt khách/năm.", options: [ { text: "10.000 lượt khách/năm.", correct: false }, { text: "100.000 lượt khách/năm.", correct: false }, { text: "500.000 lượt khách/năm.", correct: false }, { text: "1.000.000 lượt khách/năm.", correct: true } ] }, 
+      { text: "Ví dụ nào sau đây là khu du lịch quốc gia trong đề cương?", level: "Nhận biết", explanation: "Khu du lịch Đền Hùng - Phú Thọ được nêu là ví dụ về khu du lịch quốc gia.", options: [ { text: "Khu du lịch Đền Hùng.", correct: true }, { text: "Chợ nổi Cái Răng.", correct: false }, { text: "Làng cổ Đường Lâm.", correct: false }, { text: "Nhà thờ Con Gà.", correct: false } ] }, 
+      { text: "Khu du lịch địa phương cần diện tích tối thiểu và năng lực phục vụ như thế nào?", level: "Thông hiểu", explanation: "Khu du lịch địa phương cần diện tích tối thiểu 200 ha và phục vụ ít nhất 100.000 lượt khách/năm.", options: [ { text: "200 ha và 100.000 lượt khách/năm.", correct: true }, { text: "1.000 ha và 1.000.000 lượt khách/năm.", correct: false }, { text: "10 ha và 10.000 lượt khách/năm.", correct: false }, { text: "Không yêu cầu diện tích và lượng khách.", correct: false } ] }, 
+      { text: "Ví dụ nào sau đây là khu du lịch địa phương trong đề cương?", level: "Nhận biết", explanation: "Hồ Núi Cốc - Thái Nguyên được nêu là ví dụ về khu du lịch địa phương.", options: [ { text: "Hồ Núi Cốc - Thái Nguyên.", correct: true }, { text: "Hoàng thành Thăng Long.", correct: false }, { text: "Đại Nội Huế.", correct: false }, { text: "Fansipan.", correct: false } ] }, 
+      { text: "Điều kiện công nhận đô thị du lịch gồm yếu tố nào?", level: "Thông hiểu", explanation: "Đô thị du lịch cần có tài nguyên hấp dẫn, hạ tầng và cơ sở vật chất kỹ thuật đồng bộ, đồng thời du lịch giữ vị trí quan trọng trong cơ cấu kinh tế.", options: [ { text: "Có tài nguyên du lịch hấp dẫn, hạ tầng và cơ sở vật chất kỹ thuật đồng bộ, du lịch có vị trí quan trọng trong cơ cấu kinh tế.", correct: true }, { text: "Chỉ cần có nhiều nhà hàng.", correct: false }, { text: "Chỉ cần có sân vận động lớn.", correct: false }, { text: "Không cần cơ cấu lao động phù hợp.", correct: false } ] }, 
+      { text: "Ví dụ nào sau đây là đô thị du lịch trong đề cương?", level: "Nhận biết", explanation: "Sa Pa là một ví dụ về đô thị du lịch trong đề cương.", options: [ { text: "Sa Pa.", correct: true }, { text: "Cồn Phụng.", correct: false }, { text: "Đền Dầm.", correct: false }, { text: "Cù Lao An Bình.", correct: false } ] }, 
+      { text: "Tuyến chuyên đề di tích lịch sử - văn hóa vùng đồng bằng sông Hồng có trung tâm là địa phương nào?", level: "Nhận biết", explanation: "Tuyến này tập trung vào cụm di tích lịch sử - văn hóa ở trung tâm Hà Nội.", options: [ { text: "Hà Nội.", correct: true }, { text: "Đà Nẵng.", correct: false }, { text: "Cần Thơ.", correct: false }, { text: "Buôn Ma Thuột.", correct: false } ] }, 
+      { text: "Hoàng thành Thăng Long được UNESCO công nhận là Di sản văn hóa thế giới vào năm nào?", level: "Nhận biết", explanation: "Đề cương nêu Hoàng thành Thăng Long được UNESCO công nhận là Di sản văn hóa thế giới năm 2010.", options: [ { text: "1993.", correct: false }, { text: "1995.", correct: false }, { text: "2010.", correct: true }, { text: "2020.", correct: false } ] }, 
+      { text: "Văn Miếu - Quốc Tử Giám được xem là biểu tượng của nội dung nào?", level: "Thông hiểu", explanation: "Văn Miếu - Quốc Tử Giám là biểu tượng của trí tuệ và truyền thống hiếu học Việt Nam.", options: [ { text: "Trí tuệ và truyền thống hiếu học Việt Nam.", correct: true }, { text: "Thương mại biển đảo.", correct: false }, { text: "Du lịch mạo hiểm.", correct: false }, { text: "Văn hóa chợ nổi Nam Bộ.", correct: false } ] }, 
+      { text: "Chùa Trấn Quốc nổi bật với đặc điểm nào?", level: "Nhận biết", explanation: "Chùa Trấn Quốc là ngôi chùa cổ nhất tại Hà Nội với lịch sử hơn 1.500 năm.", options: [ { text: "Là ngôi chùa cổ nhất tại Hà Nội với lịch sử hơn 1.500 năm.", correct: true }, { text: "Là chợ nổi lớn nhất miền Tây.", correct: false }, { text: "Là thác nước lớn nhất Tây Nguyên.", correct: false }, { text: "Là khu du lịch biển đảo ở Hạ Long.", correct: false } ] }, 
+      { text: "Khu di tích Phủ Chủ tịch gắn với thời gian Chủ tịch Hồ Chí Minh sống và làm việc trong giai đoạn nào?", level: "Nhận biết", explanation: "Đề cương nêu Chủ tịch Hồ Chí Minh sống và làm việc tại đây trong 15 năm cuối đời, từ 1954 đến 1969.", options: [ { text: "1954 - 1969.", correct: true }, { text: "1945 - 1950.", correct: false }, { text: "1975 - 1986.", correct: false }, { text: "1930 - 1945.", correct: false } ] }, 
+      { text: "Quảng trường Ba Đình gắn với sự kiện lịch sử nào vào ngày 2/9/1945?", level: "Nhận biết", explanation: "Ngày 2/9/1945, Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập tại Quảng trường Ba Đình.", options: [ { text: "Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập.", correct: true }, { text: "Khai mạc Festival Huế.", correct: false }, { text: "Mở tuyến đường sắt Bắc - Nam.", correct: false }, { text: "Công nhận Vịnh Hạ Long là di sản.", correct: false } ] }, 
+      { text: "Tuyến Hà Nội - Hà Nam - Ninh Bình - Nam Định - Thái Bình là tuyến du lịch chính theo loại giao thông nào?", level: "Nhận biết", explanation: "Đây là tuyến du lịch chính theo đường bộ của vùng đồng bằng sông Hồng.", options: [ { text: "Đường bộ.", correct: true }, { text: "Đường hàng không.", correct: false }, { text: "Đường thủy quốc tế.", correct: false }, { text: "Đường biển.", correct: false } ] }, 
+      { text: "Tuyến đường sắt Hà Nội - Lào Cai dài khoảng bao nhiêu km?", level: "Nhận biết", explanation: "Đề cương nêu tuyến đường sắt Hà Nội - Lào Cai dài 294 km.", options: [ { text: "94 km.", correct: false }, { text: "194 km.", correct: false }, { text: "294 km.", correct: true }, { text: "494 km.", correct: false } ] }, 
+      { text: "Tuyến đường sắt Hà Nội - Lào Cai đi qua nhóm địa phương nào?", level: "Nhận biết", explanation: "Tuyến đường sắt Hà Nội - Lào Cai đi qua Hà Nội, Vĩnh Phúc, Phú Thọ, Yên Bái và Lào Cai.", options: [ { text: "Hà Nội, Vĩnh Phúc, Phú Thọ, Yên Bái, Lào Cai.", correct: true }, { text: "Hà Nội, Hải Phòng, Quảng Ninh, Bắc Giang.", correct: false }, { text: "Đà Nẵng, Huế, Quảng Nam, Quảng Ngãi.", correct: false }, { text: "Cần Thơ, An Giang, Kiên Giang, Cà Mau.", correct: false } ] }, 
+      { text: "Trong tuyến Phú Thọ - Yên Bái - Phú Thọ, điểm tham quan chính nào thuộc Yên Bái?", level: "Thông hiểu", explanation: "Mù Cang Chải là điểm du lịch nổi bật của Yên Bái trong tuyến này.", options: [ { text: "Mù Cang Chải.", correct: true }, { text: "Bến Ninh Kiều.", correct: false }, { text: "Dinh Bảo Đại.", correct: false }, { text: "Chùa Bái Đính.", correct: false } ] }, 
+      { text: "Đền Hùng gắn với truyền thuyết nào?", level: "Thông hiểu", explanation: "Đền Hùng gắn với truyền thuyết 18 đời vua Hùng dựng nên nhà nước Văn Lang.", options: [ { text: "18 đời vua Hùng dựng nên nhà nước Văn Lang.", correct: true }, { text: "Chử Đồng Tử và Tiên Dung.", correct: false }, { text: "Nàng Công và chàng Cốc.", correct: false }, { text: "Vua Bảo Đại ở Đà Lạt.", correct: false } ] }, 
+      { text: "Giỗ Tổ Hùng Vương được tổ chức vào ngày nào âm lịch?", level: "Nhận biết", explanation: "Giỗ Tổ Hùng Vương diễn ra vào mùng 10 tháng 3 âm lịch.", options: [ { text: "Mùng 10 tháng 3 âm lịch.", correct: true }, { text: "Mùng 1 tháng 1 âm lịch.", correct: false }, { text: "Ngày 15 tháng 8 âm lịch.", correct: false }, { text: "Ngày 23 tháng Chạp.", correct: false } ] }, 
+      { text: "Tuyến liên kết vùng Thái Nguyên - Quảng Ninh - Hải Phòng - Thái Nguyên có điểm chính nào?", level: "Nhận biết", explanation: "Tuyến này kết nối Hồ Núi Cốc, Sunworld Hạ Long, Vịnh Hạ Long và Đảo Cát Bà.", options: [ { text: "Hồ Núi Cốc, Sunworld Hạ Long, Vịnh Hạ Long, Đảo Cát Bà.", correct: true }, { text: "Đền Hùng, Hùng Lô, Mù Cang Chải.", correct: false }, { text: "Cồn Phụng, Cù Lao Thới Sơn, Cù Lao An Bình.", correct: false }, { text: "Chùa Hương, Tam Chúc, Bái Đính.", correct: false } ] }, 
+      { text: "Vịnh Hạ Long nổi bật với cảnh quan nào?", level: "Thông hiểu", explanation: "Vịnh Hạ Long nổi tiếng với hàng nghìn đảo đá vôi và hệ thống hang động kỳ ảo.", options: [ { text: "Hàng nghìn đảo đá vôi trên làn nước xanh ngọc bích.", correct: true }, { text: "Ruộng bậc thang vùng cao.", correct: false }, { text: "Rừng tràm trên đất than bùn.", correct: false }, { text: "Các buôn làng Tây Nguyên bên hồ nước ngọt.", correct: false } ] }, 
+      { text: "Đảo Cát Bà thuộc thành phố nào?", level: "Nhận biết", explanation: "Đảo Cát Bà thuộc huyện Cát Hải, thành phố Hải Phòng.", options: [ { text: "Hải Phòng.", correct: true }, { text: "Cần Thơ.", correct: false }, { text: "Đà Lạt.", correct: false }, { text: "Huế.", correct: false } ] }, 
+      { text: "Hồ Núi Cốc được mệnh danh là gì trong đề cương?", level: "Nhận biết", explanation: "Hồ Núi Cốc được mệnh danh là vịnh Hạ Long trên cạn của vùng trung du miền núi phía Bắc.", options: [ { text: "Vịnh Hạ Long trên cạn của vùng trung du miền núi phía Bắc.", correct: true }, { text: "Nóc nhà Đông Dương.", correct: false }, { text: "Thương cảng cổ của miền Trung.", correct: false }, { text: "Lá phổi xanh của Kiên Giang.", correct: false } ] }, 
+      { text: "Tuyến chuyên đề Con đường di sản miền Trung đi qua nhóm địa phương nào?", level: "Thông hiểu", explanation: "Tuyến Con đường di sản miền Trung kết nối nhiều tỉnh, thành từ Thanh Hóa đến Đà Nẵng và Quảng Nam.", options: [ { text: "Thanh Hóa - Nghệ An - Hà Tĩnh - Quảng Bình - Quảng Trị - Thừa Thiên Huế - Quảng Nam - Đà Nẵng.", correct: true }, { text: "Hà Nội - Hòa Bình - Sơn La - Điện Biên.", correct: false }, { text: "Cần Thơ - Kiên Giang - An Giang - Đồng Tháp.", correct: false }, { text: "Thái Nguyên - Tuyên Quang - Bắc Kạn.", correct: false } ] }, 
+      { text: "Đại Nội Huế từng là nơi ở và làm việc của bao nhiêu đời vua nhà Nguyễn?", level: "Nhận biết", explanation: "Đại Nội Huế từng là nơi ở và làm việc của 13 đời vua nhà Nguyễn.", options: [ { text: "7 đời vua.", correct: false }, { text: "10 đời vua.", correct: false }, { text: "13 đời vua.", correct: true }, { text: "18 đời vua.", correct: false } ] }, 
+      { text: "Quần thể di tích cố đô Huế được UNESCO công nhận là Di sản Văn hóa Thế giới vào năm nào?", level: "Nhận biết", explanation: "Đề cương nêu Quần thể di tích cố đô Huế được UNESCO công nhận năm 1993.", options: [ { text: "1993.", correct: true }, { text: "1995.", correct: false }, { text: "2010.", correct: false }, { text: "2015.", correct: false } ] }, 
+      { text: "Thành cổ Quảng Trị gắn với sự kiện nào trong năm 1972?", level: "Thông hiểu", explanation: "Thành cổ Quảng Trị gắn với cuộc chiến đấu 81 ngày đêm bảo vệ thành phố Quảng Trị năm 1972.", options: [ { text: "Cuộc chiến đấu 81 ngày đêm bảo vệ thành phố Quảng Trị.", correct: true }, { text: "Lễ hội Gầu Tào.", correct: false }, { text: "Sự hình thành nhà nước Văn Lang.", correct: false }, { text: "Khai trương tuyến du lịch đường sắt Bắc - Nam.", correct: false } ] }, 
+      { text: "Phong Nha - Kẻ Bàng nổi tiếng với danh hiệu nào?", level: "Nhận biết", explanation: "Phong Nha - Kẻ Bàng được mệnh danh là vương quốc hang động.", options: [ { text: "Vương quốc hang động.", correct: true }, { text: "Đất hai vua.", correct: false }, { text: "Vựa trái cây miền Tây.", correct: false }, { text: "Thành phố biển duy nhất miền Tây.", correct: false } ] }, 
+      { text: "Tuyến khám phá di sản thế giới miền Trung theo đường sắt có sơ đồ nào?", level: "Nhận biết", explanation: "Đề cương nêu tuyến Đà Nẵng - Hội An - Mỹ Sơn - Huế - Đà Nẵng.", options: [ { text: "Đà Nẵng - Hội An - Mỹ Sơn - Huế - Đà Nẵng.", correct: true }, { text: "Hạ Long - Tuần Châu - Cát Bà - Hạ Long.", correct: false }, { text: "Hà Nội - Lào Cai - Hà Khẩu - Côn Minh.", correct: false }, { text: "Cần Thơ - Chợ Cái Răng - Rạch Giá.", correct: false } ] }, 
+      { text: "Thánh địa Mỹ Sơn từng là trung tâm tôn giáo và chính trị của vương quốc nào?", level: "Nhận biết", explanation: "Mỹ Sơn từng là trung tâm tôn giáo và chính trị quan trọng của vương quốc Chăm Pa.", options: [ { text: "Chăm Pa.", correct: true }, { text: "Văn Lang.", correct: false }, { text: "Phù Nam.", correct: false }, { text: "Đại Ngu.", correct: false } ] }, 
+      { text: "Thánh địa Mỹ Sơn được UNESCO công nhận là Di sản Văn hóa thế giới vào năm nào?", level: "Nhận biết", explanation: "Đề cương nêu Thánh địa Mỹ Sơn được UNESCO công nhận là Di sản Văn hóa thế giới năm 1995.", options: [ { text: "1993.", correct: false }, { text: "1995.", correct: true }, { text: "2010.", correct: false }, { text: "2022.", correct: false } ] }, 
+      { text: "Tuyến nội vùng Tây Nguyên trong đề cương có lộ trình nào?", level: "Nhận biết", explanation: "Tuyến nội vùng Tây Nguyên đi qua Buôn Ma Thuột, Hồ Lắk, Buôn Đôn và Thác DrayNur.", options: [ { text: "Thành phố Buôn Ma Thuột - Hồ Lắk - Buôn Đôn - Thác DrayNur.", correct: true }, { text: "Hà Nội - Chùa Hương - Tam Chúc - Bái Đính.", correct: false }, { text: "Đà Nẵng - Hội An - Mỹ Sơn - Huế.", correct: false }, { text: "Hà Nội - Lào Cai - Hà Khẩu - Côn Minh.", correct: false } ] }, 
+      { text: "Hồ Lắk được mô tả là gì?", level: "Nhận biết", explanation: "Hồ Lắk là hồ nước ngọt tự nhiên lớn thứ hai Việt Nam.", options: [ { text: "Hồ nước ngọt tự nhiên lớn thứ hai Việt Nam.", correct: true }, { text: "Chợ nổi lớn nhất miền Tây.", correct: false }, { text: "Một thương cảng cổ.", correct: false }, { text: "Một quần thể đền tháp Chăm Pa.", correct: false } ] }, 
+      { text: "Buôn Đôn nổi tiếng với truyền thống nào?", level: "Nhận biết", explanation: "Buôn Đôn nổi tiếng với truyền thống săn bắt và thuần dưỡng voi rừng.", options: [ { text: "Săn bắt và thuần dưỡng voi rừng.", correct: true }, { text: "Làm gốm sứ ven sông Hồng.", correct: false }, { text: "Buôn bán trên chợ nổi.", correct: false }, { text: "Tổ chức lễ hội cung đình.", correct: false } ] }, 
+      { text: "Thác DrayNur nằm cách thành phố Buôn Ma Thuột khoảng bao nhiêu km?", level: "Nhận biết", explanation: "Đề cương nêu thác DrayNur cách thành phố Buôn Ma Thuột khoảng 25 km.", options: [ { text: "5 km.", correct: false }, { text: "15 km.", correct: false }, { text: "25 km.", correct: true }, { text: "60 km.", correct: false } ] }, 
+      { text: "Tuyến du lịch chính theo đường hàng không của vùng Đông Nam Bộ trong đề cương là tuyến nào?", level: "Nhận biết", explanation: "Tuyến hàng không nội địa được nêu là Hồ Chí Minh - Đà Lạt.", options: [ { text: "Hồ Chí Minh - Đà Lạt.", correct: true }, { text: "Hà Nội - Lào Cai.", correct: false }, { text: "Cần Thơ - Kiên Giang.", correct: false }, { text: "Hạ Long - Cát Bà.", correct: false } ] }, 
+      { text: "Tuyến Hồ Chí Minh - Đà Lạt sử dụng hai sân bay nào?", level: "Nhận biết", explanation: "Tuyến này sử dụng sân bay Tân Sơn Nhất và sân bay Liên Khương.", options: [ { text: "Tân Sơn Nhất và Liên Khương.", correct: true }, { text: "Nội Bài và Cát Bi.", correct: false }, { text: "Đà Nẵng và Phú Bài.", correct: false }, { text: "Cần Thơ và Rạch Giá.", correct: false } ] }, 
+      { text: "Nhà thờ Con Gà là biểu tượng kiến trúc nổi tiếng của thành phố nào?", level: "Nhận biết", explanation: "Nhà thờ Con Gà là một biểu tượng kiến trúc Pháp cổ ở Đà Lạt.", options: [ { text: "Đà Lạt.", correct: true }, { text: "Cần Thơ.", correct: false }, { text: "Hạ Long.", correct: false }, { text: "Mỹ Tho.", correct: false } ] }, 
+      { text: "Thác Datanla hấp dẫn du khách bởi hoạt động nào?", level: "Thông hiểu", explanation: "Datanla nổi tiếng với máng trượt xuyên rừng và các hoạt động trải nghiệm cảm giác mạnh.", options: [ { text: "Máng trượt xuyên rừng và các trò chơi cảm giác mạnh.", correct: true }, { text: "Lễ hội cung đình.", correct: false }, { text: "Chợ nổi trên sông.", correct: false }, { text: "Trải nghiệm làm gốm.", correct: false } ] }, 
+      { text: "Tuyến du lịch nội thủy vùng Tây Nam Bộ trong đề cương kết nối hai địa phương chính nào?", level: "Nhận biết", explanation: "Tuyến đường thủy vùng Tây Nam Bộ được nêu là Cần Thơ - Kiên Giang.", options: [ { text: "Cần Thơ - Kiên Giang.", correct: true }, { text: "Hà Nội - Hưng Yên.", correct: false }, { text: "Đà Nẵng - Huế.", correct: false }, { text: "Thái Nguyên - Quảng Ninh.", correct: false } ] }, 
+      { text: "Chợ nổi Cái Răng là biểu tượng văn hóa đặc trưng của địa phương nào?", level: "Nhận biết", explanation: "Chợ nổi Cái Răng là biểu tượng văn hóa sông nước của Cần Thơ.", options: [ { text: "Cần Thơ.", correct: true }, { text: "Hà Nội.", correct: false }, { text: "Đà Lạt.", correct: false }, { text: "Quảng Trị.", correct: false } ] }, 
+      { text: "Vườn quốc gia U Minh Thượng nổi tiếng với hệ sinh thái nào?", level: "Thông hiểu", explanation: "U Minh Thượng nổi tiếng với hệ sinh thái rừng tràm trên đất than bùn.", options: [ { text: "Rừng tràm trên đất than bùn.", correct: true }, { text: "Núi đá vôi karst.", correct: false }, { text: "Ruộng bậc thang.", correct: false }, { text: "San hô biển đảo miền Trung.", correct: false } ] }, 
+      { text: "Rạch Giá được mô tả là gì trong đề cương?", level: "Nhận biết", explanation: "Rạch Giá là thành phố biển duy nhất tại miền Tây, thuộc tỉnh Kiên Giang.", options: [ { text: "Thành phố biển duy nhất tại miền Tây.", correct: true }, { text: "Ngôi làng cổ đầu tiên của Việt Nam.", correct: false }, { text: "Kinh đô của các triều đại Lý, Trần, Lê.", correct: false }, { text: "Một hồ nước tự nhiên lớn ở Tây Nguyên.", correct: false } ] }, 
+      { text: "Tuyến du lịch biển đảo Tuần Châu - Cát Bà có lộ trình nào?", level: "Nhận biết", explanation: "Tuyến biển đảo Tuần Châu - Cát Bà xuất phát từ Hạ Long, đi Tuần Châu, Cát Bà rồi quay lại Hạ Long.", options: [ { text: "Hạ Long - Tuần Châu - Cát Bà - Hạ Long.", correct: true }, { text: "Bến Tre - Cồn Phụng - Vĩnh Long - Bến Tre.", correct: false }, { text: "Hà Nội - Đền Dầm - Bát Tràng - Hà Nội.", correct: false }, { text: "Hồ Chí Minh - Đà Lạt - Hồ Chí Minh.", correct: false } ] }, 
+      { text: "Tuyến du lịch di sản văn hóa thế giới Hội An - Mỹ Sơn có lộ trình nào?", level: "Nhận biết", explanation: "Tuyến di sản văn hóa thế giới trong đề cương là Đà Nẵng - Hội An - Mỹ Sơn - Đà Nẵng.", options: [ { text: "Đà Nẵng - Hội An - Mỹ Sơn - Đà Nẵng.", correct: true }, { text: "Hà Nội - Sa Pa - Côn Minh.", correct: false }, { text: "Cần Thơ - Rạch Giá - Hà Tiên.", correct: false }, { text: "Buôn Ma Thuột - Hồ Lắk - Buôn Đôn.", correct: false } ] }, 
+      { text: "Tuyến chuyên đề làng nghề truyền thống Đường Lâm - Bát Tràng kết hợp nội dung nào?", level: "Vận dụng", explanation: "Đường Lâm đại diện cho làng cổ, Bát Tràng đại diện cho nghề gốm truyền thống.", options: [ { text: "Làng cổ, kiến trúc truyền thống và nghề gốm.", correct: true }, { text: "Du lịch biển đảo và lặn ngắm san hô.", correct: false }, { text: "Du lịch hàng không và nghỉ dưỡng cao nguyên.", correct: false }, { text: "Du lịch chợ nổi và rừng tràm.", correct: false } ] } 
+    ]; 
+    
+    let currentQuiz = []; 
+    let submitted = false; 
+    
+    const quizEl = document.getElementById("quiz"); 
+    const resultEl = document.getElementById("result"); 
+    const scoreText = document.getElementById("scoreText"); 
+    const commentText = document.getElementById("commentText"); 
+    const progressText = document.getElementById("progressText"); 
+    const bankCountEl = document.getElementById("bankCount"); 
+    
+    bankCountEl.textContent = questionBank.length; 
+    
+    function shuffleArray(array) { 
+      const copy = [...array]; 
+      for (let i = copy.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1)); 
+        [copy[i], copy[j]] = [copy[j], copy[i]]; 
+      } 
+      return copy; 
+    } 
+    
+    function prepareQuiz() { 
+      const amount = Math.min(QUESTION_COUNT_PER_ATTEMPT, questionBank.length); 
+      const selectedQuestions = shuffleArray(questionBank).slice(0, amount); 
+      return selectedQuestions.map((question, questionIndex) => { 
+        return { 
+          ...question, 
+          displayNumber: questionIndex + 1, 
+          options: shuffleArray(question.options) 
+        }; 
+      }); 
+    } 
+    
+    function renderQuiz() { 
+      quizEl.innerHTML = ""; 
+      currentQuiz.forEach((q, index) => { 
+        const card = document.createElement("section"); 
+        card.className = "question-card"; 
+        card.id = `question-${index}`; 
+        const optionsHtml = q.options.map((option, optionIndex) => { 
+          const letter = String.fromCharCode(65 + optionIndex); 
+          return ` 
+            <label class="option" data-question="${index}" data-option="${optionIndex}"> 
+              <input type="radio" name="q${index}" value="${optionIndex}" onchange="updateProgress()" /> 
+              <strong>${letter}.</strong> ${option.text} 
+            </label> 
+          `; 
+        }).join(""); 
+        
+        card.innerHTML = ` 
+          <div class="question-header"> 
+            <div class="question-title">Câu ${q.displayNumber}. ${q.text}</div> 
+            <span class="badge">${q.level}</span> 
+          </div> 
+          <div class="options">${optionsHtml}</div> 
+          <div class="explanation" id="explanation-${index}"> 
+            <strong>Giải thích:</strong> ${q.explanation} 
+          </div> 
+        `; 
+        quizEl.appendChild(card); 
+      }); 
+      updateProgress(); 
+    } 
+    
+    function getSelectedAnswer(index) { 
+      const selected = document.querySelector(`input[name="q${index}"]:checked`); 
+      return selected ? Number(selected.value) : null; 
+    } 
+    
+    function updateProgress() { 
+      const answered = currentQuiz.filter((_, index) => getSelectedAnswer(index) !== null).length; 
+      progressText.textContent = `Bạn đã trả lời ${answered}/${currentQuiz.length} câu.`; 
+    } 
+    
+    function submitQuiz() { 
+      if (submitted) { 
+        alert("Bạn đã nộp bài rồi. Hãy bấm 'Làm bộ câu hỏi mới' để làm lượt khác."); 
+        return; 
+      } 
+      let unanswered = []; 
+      currentQuiz.forEach((_, index) => { 
+        const card = document.getElementById(`question-${index}`); 
+        card.classList.remove("unanswered"); 
+        if (getSelectedAnswer(index) === null) { 
+          unanswered.push(index); 
+          card.classList.add("unanswered"); 
+        } 
+      }); 
+      
+      if (unanswered.length > 0) { 
+        alert(`Bạn còn ${unanswered.length} câu chưa chọn đáp án. Hãy hoàn thành trước khi nộp bài.`); 
+        document.getElementById(`question-${unanswered[0]}`).scrollIntoView({ behavior: "smooth", block: "center" }); 
+        return; 
+      } 
+      
+      let score = 0; 
+      currentQuiz.forEach((q, index) => { 
+        const selected = getSelectedAnswer(index); 
+        const optionLabels = document.querySelectorAll(`.option[data-question="${index}"]`); 
+        
+        optionLabels.forEach(label => { 
+          const optionIndex = Number(label.dataset.option); 
+          const option = q.options[optionIndex]; 
+          label.classList.remove("correct", "wrong"); 
+          if (option.correct) { label.classList.add("correct"); } 
+          if (optionIndex === selected && !option.correct) { label.classList.add("wrong"); } 
+        }); 
+        
+        if (q.options[selected].correct) { score++; } 
+        document.getElementById(`explanation-${index}`).style.display = "block"; 
+        
+        const inputs = document.querySelectorAll(`input[name="q${index}"]`); 
+        inputs.forEach(input => input.disabled = true); 
+      }); 
+      
+      submitted = true; 
+      const percentage = Math.round((score / currentQuiz.length) * 100); 
+      scoreText.textContent = `${score}/${currentQuiz.length} điểm (${percentage}%)`; 
+      
+      if (percentage >= 85) { 
+        commentText.textContent = "Xuất sắc! Bạn nắm rất chắc nội dung đề cương."; 
+      } else if (percentage >= 70) { 
+        commentText.textContent = "Tốt! Bạn đã hiểu phần lớn nội dung, nên ôn thêm các tuyến theo vùng và điều kiện công nhận."; 
+      } else if (percentage >= 50) { 
+        commentText.textContent = "Đạt mức cơ bản. Hãy xem lại phần giải thích sau mỗi câu để củng cố kiến thức."; 
+      } else { 
+        commentText.textContent = "Bạn nên ôn lại các khái niệm, phân loại tuyến du lịch và các tuyến tiêu biểu trong đề cương."; 
+      } 
+      
+      resultEl.style.display = "block"; 
+      resultEl.scrollIntoView({ behavior: "smooth", block: "start" }); 
+    } 
+    
+    function resetCurrentQuiz() { 
+      submitted = false; 
+      resultEl.style.display = "none"; 
+      scoreText.textContent = ""; 
+      commentText.textContent = ""; 
+      
+      currentQuiz.forEach((_, index) => { 
+        const inputs = document.querySelectorAll(`input[name="q${index}"]`); 
+        inputs.forEach(input => { 
+          input.checked = false; 
+          input.disabled = false; 
+        }); 
+        
+        const optionLabels = document.querySelectorAll(`.option[data-question="${index}"]`); 
+        optionLabels.forEach(label => { label.classList.remove("correct", "wrong"); }); 
+        
+        const explanation = document.getElementById(`explanation-${index}`); 
+        if (explanation) { explanation.style.display = "none"; } 
+        
+        const card = document.getElementById(`question-${index}`); 
+        if (card) { card.classList.remove("unanswered"); } 
+      }); 
+      
+      updateProgress(); 
+      window.scrollTo({ top: 0, behavior: "smooth" }); 
+    } 
+    
+    function startNewQuiz() { 
+      submitted = false; 
+      resultEl.style.display = "none"; 
+      scoreText.textContent = ""; 
+      commentText.textContent = ""; 
+      
+      currentQuiz = prepareQuiz(); 
+      renderQuiz(); 
+      window.scrollTo({ top: 0, behavior: "smooth" }); 
+    } 
+    
+    startNewQuiz(); 
+  </script> 
+</body> 
+</html>
